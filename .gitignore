@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Data & models (usually too big for GitHub)
+data/
+*.csv
+*.xlsx
+*.pkl
+*.h5
+*.pt
+*.ckpt
+
+# Logs
+*.log
+logs/
+
+# Environment variables / secrets
+.env
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
+
+#Requirements
+Requirements.txt
+
+#Temp
+*.py
+*.ipynb
