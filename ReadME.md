@@ -18,7 +18,7 @@
 
 ## 🧭 Table of Contents
 
-- #-Project-Overview[https://github.com/Saurov-Thakur_ltts/Intern_ml/edit/main/ReadME.md/Project Overview]
+- #-Project-Overview
 - #-Objective
 - #-Repository-Contents
 - #-Documentation
