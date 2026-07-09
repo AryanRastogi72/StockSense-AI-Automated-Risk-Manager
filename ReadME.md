@@ -18,12 +18,14 @@
 
 ## 🧭 Table of Contents
 
-- #-project-overview
-- #-objective
-- #-repository-contents
-- #-documentation
-- #️-implementations
-- #-models-being- Project Overview
+- #-Project-Overview[https://github.com/Saurov-Thakur_ltts/Intern_ml/edit/main/ReadME.md/Project Overview]
+- #-Objective
+- #-Repository-Contents
+- #-Documentation
+- #️-Implementations
+- #-Models-Being-Compared 
+
+## Project Overview
 
 This project builds a **mobile-app-ready stock trend prediction system** that forecasts a stock's short-term price movement (**1–2 days ahead**), using **LTTS (L&T Technology Services, NSE: LTTS)** as the primary running example.
 
