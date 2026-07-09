@@ -1,3 +1,8 @@
+# Stock Price Prediction Project
+
+## Model Selection Flowchart
+
+```mermaid
 %%{init: {'flowchart': {'curve': 'basis'}} }%%
 flowchart TD
     Start(["START: New project, any data"]) --> Q1{"Criterion 1: What is the data category?"}
@@ -35,3 +40,4 @@ flowchart TD
     class Start startNode
     class Q1,Q2S,Q2U,Q3S,Q3U,Q4SC,Q4SR,Q4UC,Q4UR decision
     class UnsupS,UnsupU,LSCsmall,LSClarge,LSRsmall,LSRlarge,LUCsmall,LUClarge,LURsmall,LURlarge leaf
+```
