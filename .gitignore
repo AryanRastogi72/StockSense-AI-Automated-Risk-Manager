@@ -15,13 +15,11 @@ env/
 # VS Code
 .vscode/
 
-# Data & models (usually too big for GitHub)
+# Large raw data files
 data/
-*.csv
 *.xlsx
 *.pkl
 *.h5
-*.pt
 *.ckpt
 
 # Logs
@@ -38,9 +36,3 @@ Thumbs.db
 
 # Streamlit
 .streamlit/secrets.toml
-
-#Requirements
-Requirements.txt
-
-#Temp
-*.html

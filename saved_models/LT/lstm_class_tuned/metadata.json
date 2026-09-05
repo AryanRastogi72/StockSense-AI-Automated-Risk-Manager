@@ -1,0 +1,8 @@
+{
+  "input_size": 23,
+  "hidden_size": 32,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "lookback": 30,
+  "num_classes": 3
+}

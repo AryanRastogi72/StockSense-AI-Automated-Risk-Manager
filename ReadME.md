@@ -1,151 +1,97 @@
-<div align="center">
+# StockSense AI: Automated Risk Manager
 
-# 📈 Stock-Ticker with ML and DL
-### A Comparative Predictive Analysis
+## Overview
+Point predictions from machine learning models are too often treated as certainties by downstream systems. The reality is that market forecasting models have varying levels of confidence, model disagreement, and contextual accuracy depending on current market regimes. StockSense AI acts as an **AI Risk Manager**, wrapping predictive forecasting pipelines in a rigorous risk-scoring and explainability layer. It answers not just "what is the prediction?", but "how much should we trust this prediction right now?".
 
-*An L&T Technology Services Internship Project*
+Originally built during an LTTS internship, this project has been significantly extended for the **Razorpay AI Builder Internship 2026 (Track 2: AI Risk Manager)**.
 
-![Python](https://img.shields.io/badge/Python-3.14-blue?logo=python&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-DataFrames-150458?logo=pandas&logoColor=white)
-![Scikit-learn](https://img.shields.io/badge/Scikit--learn-ML-F7931E?logo=scikitlearn&logoColor=white)
-![PyTorch](https://img.shields.io/badge/PyTorch-DL-EE4C2C?logo=pytorch&logoColor=white)
-![Plotly](https://img.shields.io/badge/Plotly-Visualization-3F4F75?logo=plotly&logoColor=white)
-![Status](https://img.shields.io/badge/Status-In%20Progress-yellow)
+## Architecture
+The system supports three assets (`LT.NS`, `TCS.NS`, `RELIANCE.NS`) through a unified pipeline:
+1. **Forecasting Engine**: 12 base models per ticker (Random Forest, XGBoost, PyTorch LSTM across regression and classification tracks).
+2. **Meta-Learner Stack**: A Logistic Regression / Ridge Regression stacking layer trained purely on Out-Of-Fold (OOF) predictions to eliminate data leakage.
+3. **Dynamic Model Routing**: API dynamically serves the Stacked model or the best Base model depending on which objectively clears a minimum generalization margin (0.5%).
+4. **Risk-Scoring Layer**:
+    * **Regime Detection**: IsolationForest gates extreme anomalous volatility.
+    * **Value-at-Risk (VaR)**: Volatility-scaled downside risk metrics.
+    * **Disagreement Scoring**: Penalizes predictions where base models heavily diverge.
+5. **Explainability Layer**: Dynamic SHAP extraction. Uses native `TreeExplainer` for tree models, a coefficient-weighted ensemble reconstructor for stacked models, and a validated `DecisionTreeRegressor` surrogate proxy for deep learning (LSTM) models.
+6. **Portfolio Aggregation**: Computes true cross-asset correlation matrices to produce realistic portfolio-level VaR.
 
-</div>
+## Tech Stack
+* **Core ML**: `scikit-learn`, `xgboost`, `torch`
+* **Explainability**: `shap`
+* **Backend**: `fastapi`, `uvicorn`
+* **Frontend**: `streamlit`, `plotly`
+* **Data**: `yfinance`, `pandas`, `pandas-ta-classic`
 
----
+## Key Results & Model Selection
+The pipeline utilizes a strict `0.5%` margin threshold to justify the complexity of serving a stacked meta-learner. Otherwise, it falls back to the single best-performing base model.
 
-## 🧭 Table of Contents
+### 1. LT.NS
+* **Classification**: **Stack** served. Stack Accuracy (37.84%) outperformed XGBoost (36.75%) by +1.09%, clearing the margin.
+* **Regression**: **XGBoost Tuned** served. Stack (57.19 RMSE) failed to beat XGBoost (57.16 RMSE).
 
-- #-Project-Overview
-- #-Objective
-- #-Repository-Contents
-- #-Documentation
-- #️-Implementations
-- #-Models-Being-Compared 
+### 2. TCS.NS
+* **Classification**: **XGBoost Tuned** served. XGBoost (34.06%) beat the Stack (30.93%). We verified that OOF probability column ordering was perfectly consistent; this was a genuine failure of the meta-learner to generalize for this specific asset.
+* **Regression**: **XGBoost Tuned** served. Stack (46.27 RMSE) beat XGBoost (46.39 RMSE) by only +0.25%, failing to clear the strict 0.5% relative margin required to justify ensemble serving costs.
 
-## Project Overview
+### 3. RELIANCE.NS
+* **Classification**: **LSTM Tuned** served. LSTM (37.06%) beat the Stack (36.65%).
+* **Regression**: **LSTM Tuned** served. LSTM (18.12 RMSE) beat the Stack (18.15 RMSE).
 
-This project builds a **mobile-app-ready stock trend prediction system** that forecasts a stock's short-term price movement (**1–2 days ahead**), using **LTTS (L&T Technology Services, NSE: LTTS)** as the primary running example.
+## Risk-Scoring Methodology
+* **Regime Multiplier**: An IsolationForest detects anomalies based on 20-day return volatility and price dispersion. Normal regimes map to 1.0; anomalous regimes scale risk upwards.
+* **Regression Risk (90/10 Split)**: Heavily weighted toward empirical VaR (Z-score 1.645) since base models historically cluster in their predictions, making model disagreement a secondary signal.
+* **Classification Risk (60/40 Split)**: Blends prediction Entropy (how uncertain the winning probabilities are) with base-model Disagreement (how wildly the base models disagreed on the winning class).
 
-Instead of committing to a single algorithm upfront, this project **implements and evaluates multiple ML and DL approaches** on the same LTTS price data — under the same evaluation criteria — to empirically determine which approach performs best for short-term stock prediction.
+## Explainability & SHAP
+The API exposes `/explain/{ticker}`. Explanations dynamically adapt to the `served_model` configuration:
+* Single Tree Models use SHAP `TreeExplainer` / `PermutationExplainer`.
+* Stacked Models use a custom reconstructor that computes feature impact by weighting base-model SHAP values by the meta-learner's learned coefficients.
+* **LSTM Surrogate Proxy**: Deep learning predictions are explained by training a high-fidelity `DecisionTreeRegressor` surrogate on the most recent 500 trading days. The API performs live fidelity checks. 
+  * *Current RELIANCE Surrogate Fidelity*: **0.8246** $R^2$ (Classification) / **0.9637** $R^2$ (Regression).
 
----
+## Portfolio Risk Aggregation
+The `/portfolio/risk` endpoint goes beyond simple additive VaR. It extracts the real 15-year return series for the requested tickers, calculates a live correlation matrix ($\Sigma$), and computes the portfolio variance using $w^T \Sigma w$. This ensures diversification benefits (or correlated liabilities) are mathematically reflected in the final Portfolio VaR.
 
-## 🎯 Objective
+## Setup & Run Instructions
+1. **Install Dependencies**: 
+   ```bash
+   pip install -r Requirements.txt
+   ```
+2. **Train Models (Optional - pre-trained artifacts included)**:
+   ```bash
+   python train_pipeline.py LT
+   python train_pipeline.py TCS
+   python train_pipeline.py RELIANCE
+   ```
+3. **Start the Backend API**:
+   ```bash
+   cd Application/Backend
+   uvicorn main:app --reload --port 8000
+   ```
+4. **Start the Dashboard**:
+   ```bash
+   cd Application/Frontend
+   streamlit run dashboard_ui.py
+   ```
 
-> Build a **comparative predictive framework** that:
->
-> - Cleans and prepares real NSE stock data
-> - Engineers meaningful technical indicators
-> - Trains multiple ML/DL models on the same dataset
-> - Evaluates them fairly against a naive baseline
-> - Wraps the best-performing model behind an API for mobile-app consumption
+## API Endpoint Reference
+* `GET /risk/{ticker}`: Returns live predictions, `served_model` metadata, and full risk breakdowns (Base Risk, Final Risk, VaR, Disagreement, Regime).
+* `GET /explain/{ticker}?task=class|reg`: Returns `base_value`, dictionary of `feature_impacts`, and `low_fidelity_warning` (for LSTM proxies).
+* `POST /portfolio/risk`: Accepts a JSON payload of tickers, returning individual risks, the cross-asset `correlation_matrix`, and the global `portfolio_var_95`.
 
----
+## Testing
+The `Models/tests/` directory contains strict validation suites preventing schema desyncs between backend logic and frontend consumption, and verifying mathematical parity in regime scoring and explainability. Run via:
+```bash
+pytest Models/tests/
+```
 
-## 📂 Repository Contents
+## Known Limitations & Future Work
+* **Fixed Risk Weightings**: The 90/10 (Regression) and 60/40 (Classification) VaR/Disagreement weightings are currently fixed globally due to time constraints, though they should ideally be calibrated per-ticker based on the historical variance of that specific asset's base models.
+* **LSTM Surrogate Limitations**: The DecisionTree surrogate is an approximation of the LSTM's non-linear decision boundary. While current fidelity is high (>0.80), sudden regime shifts could decouple the surrogate.
+* **TCS Classification Meta-Learner**: The stacking layer consistently underperformed baseline models for TCS classification. While bugs were ruled out, the underlying data distribution cause remains an open research item.
+* **Asset Universe**: Hardcoded to 3 specific Indian equities.
 
-| Section | Description |
-|---------|-------------|
-| 📘 **Documentation** | Full project reference document covering all conceptual, statistical, and algorithmic groundwork |
-| 🛠️ **Implementations** | All working code — feature engineering notebooks and model scripts |
-
-> **Note:** Raw and processed datasets are excluded from the repository. Users should place their own NSE CSV file inside the `Implementations/` folder before running the pipeline.
-
----
-
-## 📘 Documentation
-
-The `Documentation/` folder contains the complete reference document for the project.
-
-| File | Description |
-|------|-------------|
-| `Project_Reference_Document.docx` | Complete reference covering data types, statistical foundations, ML vs DL, technical indicators, algorithm comparisons, and the full logical pipeline |
-
-**Highlights inside the document:**
-
-- 🧩 Data Type & Category Tree (Structured / Semi-structured / Unstructured)
-- 🧠 AI vs ML vs Deep Learning
-- 📊 Statistical Foundations (Univariate, Multivariate, Overfitting/Underfitting)
-- 📅 Time-Series Concepts & Industry Use Cases
-- 🧪 Technical Indicators (MA, EMA, RSI, MACD, ROC, Bollinger Bands, OBV)
-- 🤖 ML vs DL Comparison
-- 🏗️ Logical Approach & Implementation Steps
-
----
-
-## 🛠️ Implementations
-
-The `Implementations/` folder contains the working code for feature engineering and model building.
-
-| File | Purpose |
-|------|---------|
-| `Feature_Engineering.ipynb` | Loads the raw NSE CSV, performs cleaning, and generates all technical indicators listed in the reference document |
-| `Linear_Regression_Model.py` | Trains a Linear Regression model on the engineered features and predicts the next day's closing price |
-
-> Additional models (Logistic Regression, ARIMA, Random Forest, LSTM, GRU, Transformer) will be added in later phases of the project.
-
----
-
-## 📊 Models Being Compared
-
-| Category | Model | Type | Status |
-|----------|-------|------|--------|
-| Traditional ML | Moving Average | Baseline | 🕓 Planned |
-| Traditional ML | **Linear Regression** | Regression | ✅ In Progress |
-| Traditional ML | **Logistic Regression** | Classification | 🕓 Planned |
-| Traditional ML | ARIMA | Time-Series | 🕓 Planned |
-| Traditional ML | Random Forest | Ensemble | 🕓 Planned |
-| Deep Learning | LSTM | Sequence Model | 🕓 Planned |
-| Deep Learning | GRU | Sequence Model | 🕓 Planned |
-| Deep Learning | Transformer | Attention Model | 🕓 Planned |
-
----
-
-## 🧪 Technical Indicators Used
-
-| Indicator | Category | Purpose |
-|-----------|----------|---------|
-| Lag Prices | Historical | Captures recent price history |
-| Daily Return | Momentum | Direction + strength of change |
-| Moving Average (MA5 / MA10 / MA20) | Trend | Smooths noise |
-| Volatility | Risk | Measures instability |
-| Log Volume | Volume | Scales large volume swings |
-| RSI | Momentum | Buying vs selling exhaustion |
-| MACD | Momentum | Trend momentum shifts |
-| ROC | Momentum | Speed of price change |
-| Bollinger Bands | Volatility | Unusual price stretch |
-| OBV | Volume | Volume-backed conviction |
-
----
-
-## 📈 Roadmap
-
-- [x] Week 1 — Conceptual Foundations
-- [x] Week 2 — Logical Approach & Technical Indicators
-- [x] Feature Engineering Pipeline
-- [ ] Linear Regression Model (In Progress)
-- [ ] Logistic Regression Model
-- [ ] ARIMA / Random Forest
-- [ ] LSTM / GRU / Transformer
-- [ ] Model Evaluation & Comparison
-- [ ] API + Mobile App Integration
-
----
-
-## 👤 Author
-
-**Aryan Rastogi**  
-*Intern @ L&T Technology Services*  
-🏢 Bangalore, India  
-🧑‍💼 Supervisor: Saurov Thakur
-
----
-
-<div align="center">
-
-*Built with ☕, curiosity, and a lot of `df.head()` calls.*
-
-</div>
+## Credits
+Project originally authored during an **LTTS Internship**, actively extended and refactored for the **Razorpay AI Builder Internship 2026 (Track 2)**.

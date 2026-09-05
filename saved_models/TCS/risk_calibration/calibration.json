@@ -1,0 +1,13 @@
+{
+  "d_p1": -0.09699040080639691,
+  "training_p95_volatility": 0.022354164669668823,
+  "max_dispersion": 0.009724580373185417,
+  "regime_features": [
+    "Daily_Return",
+    "RSI_14",
+    "MACD",
+    "MACD_Signal",
+    "ROC_10",
+    "Log_Volume"
+  ]
+}

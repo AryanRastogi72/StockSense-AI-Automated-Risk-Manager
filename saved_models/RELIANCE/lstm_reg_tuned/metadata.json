@@ -1,0 +1,7 @@
+{
+  "input_size": 23,
+  "hidden_size": 64,
+  "num_layers": 2,
+  "dropout": 0.3,
+  "lookback": 30
+}

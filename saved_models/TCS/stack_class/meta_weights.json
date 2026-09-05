@@ -1,0 +1,44 @@
+{
+  "Class_Down": {
+    "Intercept": -0.013630782519230793,
+    "Coefficients": {
+      "RF_Prob_Down": 0.307783948672725,
+      "XGB_Prob_Down": -0.09587722580743004,
+      "LSTM_Prob_Down": 0.037988266885585424,
+      "RF_Prob_Flat": 0.037422982721198025,
+      "XGB_Prob_Flat": 0.01566348089098484,
+      "LSTM_Prob_Flat": -0.05653600980739043,
+      "RF_Prob_Up": -0.35614425615277373,
+      "XGB_Prob_Up": 0.06927633510800758,
+      "LSTM_Prob_Up": 0.0076107905189968525
+    }
+  },
+  "Class_Flat": {
+    "Intercept": 0.0031856706774703314,
+    "Coefficients": {
+      "RF_Prob_Down": -0.49353796327295985,
+      "XGB_Prob_Down": 0.24220763233491793,
+      "LSTM_Prob_Down": 0.019036554642251017,
+      "RF_Prob_Flat": 0.35585368339066514,
+      "XGB_Prob_Flat": -0.13616013415002873,
+      "LSTM_Prob_Flat": 0.0903301117313723,
+      "RF_Prob_Up": 0.14089019670363365,
+      "XGB_Prob_Up": -0.10284173882159552,
+      "LSTM_Prob_Up": -0.10616083230401656
+    }
+  },
+  "Class_Up": {
+    "Intercept": 0.010445111841775987,
+    "Coefficients": {
+      "RF_Prob_Down": 0.18575401460024044,
+      "XGB_Prob_Down": -0.14633040652748236,
+      "LSTM_Prob_Down": -0.05702482152783089,
+      "RF_Prob_Flat": -0.3932766661118562,
+      "XGB_Prob_Flat": 0.12049665325904965,
+      "LSTM_Prob_Flat": -0.03379410192398365,
+      "RF_Prob_Up": 0.21525405944914153,
+      "XGB_Prob_Up": 0.03356540371359358,
+      "LSTM_Prob_Up": 0.09855004178501786
+    }
+  }
+}

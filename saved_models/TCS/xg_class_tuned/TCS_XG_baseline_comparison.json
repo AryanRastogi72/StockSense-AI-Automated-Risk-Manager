@@ -1,0 +1,7 @@
+{
+    "accuracy_naive": 0.2997275204359673,
+    "accuracy_baseline": 0.3583106267029973,
+    "precision_baseline": 0.3664811835796511,
+    "recall_baseline": 0.36515388153472134,
+    "f1_baseline": 0.3423785653099573
+}

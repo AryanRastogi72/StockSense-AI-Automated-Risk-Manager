@@ -1,0 +1,40 @@
+Model,Type,Metric,Value,Script
+Naive Baseline,Regression,RMSE,57.16,RF_Reg_Untuned.py
+Naive Baseline,Regression,R2,0.975,RF_Reg_Untuned.py
+Random Forest Baseline,Regression,RMSE,76.62,RF_Reg_Untuned.py
+Random Forest Baseline,Regression,R2,0.9552,RF_Reg_Untuned.py
+Random Forest Tuned,Regression,RMSE,57.26,RF_Reg_Tuned.py
+Random Forest Tuned,Regression,R2,0.975,RF_Reg_Tuned.py
+XGBoost Baseline,Regression,RMSE,68.02,XG_Reg_Untuned.py
+XGBoost Baseline,Regression,R2,0.9647,XG_Reg_Untuned.py
+XGBoost Tuned,Regression,RMSE,57.17,XG_Reg_Tuned.py
+XGBoost Tuned,Regression,R2,0.975,XG_Reg_Tuned.py
+LSTM Baseline,Regression,RMSE,61.89,LSTM_Reg_Untuned.py
+LSTM Baseline,Regression,R2,0.9708,LSTM_Reg_Untuned.py
+LSTM Tuned,Regression,RMSE,57.11,LSTM_Reg_Tuned.py
+LSTM Tuned,Regression,R2,0.9751,LSTM_Reg_Tuned.py
+Majority Baseline,Classification,Accuracy,0.3169,RF_Class_Untuned.py
+Random Forest Baseline,Classification,Accuracy,0.3443,RF_Class_Untuned.py
+Random Forest Baseline,Classification,Precision,0.3872,RF_Class_Untuned.py
+Random Forest Baseline,Classification,Recall,0.3343,RF_Class_Untuned.py
+Random Forest Baseline,Classification,F1,0.2574,RF_Class_Untuned.py
+Random Forest Tuned,Classification,Accuracy,0.3566,RF_Class_Tuned.py
+Random Forest Tuned,Classification,Precision,0.4003,RF_Class_Tuned.py
+Random Forest Tuned,Classification,Recall,0.3478,RF_Class_Tuned.py
+Random Forest Tuned,Classification,F1,0.2923,RF_Class_Tuned.py
+XGBoost Baseline,Classification,Accuracy,0.362,XG_Class_Untuned.py
+XGBoost Baseline,Classification,Precision,0.3768,XG_Class_Untuned.py
+XGBoost Baseline,Classification,Recall,0.3543,XG_Class_Untuned.py
+XGBoost Baseline,Classification,F1,0.3162,XG_Class_Untuned.py
+XGBoost Tuned,Classification,Accuracy,0.373,XG_Class_Tuned.py
+XGBoost Tuned,Classification,Precision,0.3656,XG_Class_Tuned.py
+XGBoost Tuned,Classification,Recall,0.3662,XG_Class_Tuned.py
+XGBoost Tuned,Classification,F1,0.3194,XG_Class_Tuned.py
+LSTM Baseline,Classification,Accuracy,0.3224,LSTM_Class_Untuned.py
+LSTM Baseline,Classification,Precision,0.332,LSTM_Class_Untuned.py
+LSTM Baseline,Classification,Recall,0.317,LSTM_Class_Untuned.py
+LSTM Baseline,Classification,F1,0.2954,LSTM_Class_Untuned.py
+LSTM Tuned,Classification,Accuracy,0.3292,LSTM_Class_Tuned.py
+LSTM Tuned,Classification,Precision,0.3216,LSTM_Class_Tuned.py
+LSTM Tuned,Classification,Recall,0.326,LSTM_Class_Tuned.py
+LSTM Tuned,Classification,F1,0.3201,LSTM_Class_Tuned.py

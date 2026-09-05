@@ -1,0 +1,20 @@
+{
+    "classification": {
+        "model": "stack",
+        "reason": "Stack (37.84%) beat XGBoost (36.75%) by 1.09%, clearing the 0.5% absolute margin."
+    },
+    "regression": {
+        "model": "xgb_reg_tuned",
+        "reason": "XGBoost (57.16) beat Stack (57.19)."
+    },
+    "risk_weights": {
+        "classification": {
+            "var_weight": 0.6,
+            "disagreement_weight": 0.4
+        },
+        "regression": {
+            "var_weight": 0.9,
+            "disagreement_weight": 0.1
+        }
+    }
+}

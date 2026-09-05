@@ -1,0 +1,31 @@
+# Core
+numpy
+pandas
+scipy
+
+# Visualization
+plotly
+
+# Classical ML
+scikit-learn>=1.5
+xgboost
+
+# Deep Learning
+torch
+
+# Technical Indicators
+pandas-ta-classic
+
+# Stock data APIs
+yfinance
+
+# Dashboard
+streamlit
+
+# Backend
+fastapi
+uvicorn
+
+# Utilities
+joblib
+shap

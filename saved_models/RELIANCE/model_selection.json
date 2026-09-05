@@ -1,0 +1,20 @@
+{
+    "classification": {
+        "model": "lstm_class_tuned",
+        "reason": "LSTM (37.06%) beat Stack (36.65%)."
+    },
+    "regression": {
+        "model": "lstm_reg_tuned",
+        "reason": "LSTM (18.12) beat Stack (18.15)."
+    },
+    "risk_weights": {
+        "classification": {
+            "var_weight": 0.6,
+            "disagreement_weight": 0.4
+        },
+        "regression": {
+            "var_weight": 0.9,
+            "disagreement_weight": 0.1
+        }
+    }
+}
