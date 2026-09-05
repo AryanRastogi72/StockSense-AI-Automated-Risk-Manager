@@ -73,7 +73,7 @@ The `/portfolio/risk` endpoint goes beyond simple additive VaR. It extracts the 
 4. **Start the Dashboard**:
    ```bash
    cd Application/Frontend
-   streamlit run dashboard_ui.py
+   streamlit run streamlit_app.py
    ```
 
 ## API Endpoint Reference

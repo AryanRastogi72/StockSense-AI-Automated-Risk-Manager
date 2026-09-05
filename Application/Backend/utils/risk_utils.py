@@ -295,8 +295,10 @@ def compute_portfolio_risk(tickers: list, live_data_map: dict) -> dict:
         return {
             "tickers": available_tickers,
             "individual_risks": ticker_results,
-            "portfolio_var": None,
+            "portfolio_var_95": None,
+            "portfolio_volatility": None,
             "correlation_matrix": None,
+            "weights": None,
             "note": "Need at least 2 tickers for portfolio VaR",
         }
 
