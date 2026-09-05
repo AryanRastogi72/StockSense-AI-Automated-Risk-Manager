@@ -116,7 +116,8 @@ with st.sidebar:
     st.header("⚙️ Model Configuration")
     st.caption("Select the model parameters below and hit Predict.")
 
-    ticker = st.selectbox("Asset", SUPPORTED_TICKERS, format_func=lambda t: f"Larsen & Toubro ({t}.NS)")
+    ticker_names = {"LT": "Larsen & Toubro", "TCS": "Tata Consultancy Services", "RELIANCE": "Reliance Industries"}
+    ticker = st.selectbox("Asset", SUPPORTED_TICKERS, format_func=lambda t: f"{ticker_names.get(t, t)} ({t}.NS)")
 
     algorithm = st.selectbox("Algorithm", VALID_ALGORITHMS, format_func=lambda a: ALGO_LABELS[a])
 
@@ -249,9 +250,10 @@ if portfolio_clicked:
     st.session_state.risk_result = None
     with st.spinner("Computing Portfolio Risk..."):
         try:
-            # We only have 'LT' right now, but the API supports list
-            live_data_map = {"LT": get_live_features("LT")}
-            port_risk = compute_portfolio_risk(["LT"], live_data_map)
+            live_data_map = {}
+            for t in SUPPORTED_TICKERS:
+                live_data_map[t] = get_live_features(t)
+            port_risk = compute_portfolio_risk(SUPPORTED_TICKERS, live_data_map)
             st.session_state.portfolio_result = port_risk
         except Exception as exc:
             st.error(f"❌ Error computing portfolio risk: {exc}")

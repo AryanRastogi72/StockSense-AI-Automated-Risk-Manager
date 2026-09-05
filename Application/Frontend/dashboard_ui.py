@@ -68,7 +68,8 @@ def render_risk_dashboard(risk_res):
 
     with col_class:
         st.markdown("### 🧭 Classification (Direction)")
-        st.markdown(f"**Predicted Direction (Stack):** {risk['classification']['predicted_direction']}")
+        served_cls = risk['classification'].get('served_model', 'Stack')
+        st.markdown(f"**Predicted Direction ({served_cls}):** {risk['classification']['predicted_direction']}")
 
         cls_risk = risk["classification"]
         cls_final = cls_risk["final_risk"]

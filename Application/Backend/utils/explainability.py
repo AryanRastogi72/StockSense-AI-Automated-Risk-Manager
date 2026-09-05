@@ -169,7 +169,7 @@ def _explain_regression_tree(ticker, live_data, model_id):
     
     sv = shap_values[0][0] if isinstance(shap_values, list) else (shap_values[0] if shap_values.ndim == 2 else shap_values)
 
-    feature_impacts = {col: float(val) for col, val in zip(saved_cols, sv) if abs(val) > 1e-4}
+    feature_impacts = {col: float(val) for col, val in zip(saved_cols, sv) if abs(val) > 1e-6}
     feature_impacts = dict(sorted(feature_impacts.items(), key=lambda x: abs(x[1]), reverse=True))
 
     # Convert to Rupee units
@@ -258,7 +258,7 @@ def _explain_regression_lstm(ticker, live_data):
     sv = shap_values[0]
     base_val = float(explainer.expected_value[0]) if isinstance(explainer.expected_value, (list, np.ndarray)) else float(explainer.expected_value)
     
-    feature_impacts = {col: float(val) for col, val in zip(saved_cols, sv) if abs(val) > 1e-4}
+    feature_impacts = {col: float(val) for col, val in zip(saved_cols, sv) if abs(val) > 1e-6}
     feature_impacts = dict(sorted(feature_impacts.items(), key=lambda x: abs(x[1]), reverse=True))
 
     latest_close = float(live_data["latest_close"])
