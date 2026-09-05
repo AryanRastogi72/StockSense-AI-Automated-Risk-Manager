@@ -33,8 +33,9 @@ def render_risk_dashboard(risk_res):
     col_reg, col_class = st.columns(2)
 
     with col_reg:
-        st.markdown("### 💰 Regression (Price)")
-        st.markdown(f"**Predicted Close (XGBoost):** ₹ {risk['regression']['predicted_close_xgb']:.2f}")
+        st.markdown("### 📉 Regression (Price)")
+        served_reg = risk['regression'].get('served_model', 'XGBoost')
+        st.markdown(f"**Predicted Close ({served_reg}):** ₹ {risk['regression']['predicted_close']:.2f}")
 
         reg_risk = risk["regression"]
         reg_final = reg_risk["final_risk"]
@@ -92,16 +93,20 @@ def render_risk_dashboard(risk_res):
             if regime.get("outlier_gate"):
                 st.error("Outlier Gate Triggered: Extreme market conditions detected.")
 
-        st.markdown("#### Top SHAP Features (Stack Logit)")
+        st.markdown(f"#### Top SHAP Features ({'Stack Logit' if 'feature_impacts_logit' in expl['class'] else 'Base Model'})")
         if expl["class"].get("low_fidelity_warning"):
             st.warning(f"LSTM Surrogate Proxy has low fidelity (R² = {expl['class']['lstm_surrogate_fidelity_r2']:.2f}). SHAP values for LSTM are included but may be noisy.")
-        shap_cls = pd.Series(expl["class"]["feature_impacts_logit"]).head(TOP_SHAP_FEATURES)
+        elif expl["class"].get("lstm_surrogate_fidelity_r2") is not None:
+             st.info(f"LSTM Surrogate Proxy Fidelity R²: {expl['class']['lstm_surrogate_fidelity_r2']:.2f}")
+
+        shap_key = "feature_impacts_logit" if "feature_impacts_logit" in expl["class"] else "feature_impacts"
+        shap_cls = pd.Series(expl["class"][shap_key]).head(TOP_SHAP_FEATURES)
         st.bar_chart(shap_cls)
 
     # VaR Band Chart
-    st.markdown("### 📉 Recent Price History with VaR Band")
+    st.markdown("### 📊 Recent Price History with VaR Band")
     df = risk_res["live_data"]["raw_df"].tail(PRICE_HISTORY_TAIL)
-    pred_price = risk['regression']['predicted_close_xgb']
+    pred_price = risk['regression']['predicted_close']
 
     current_vol = reg_risk.get("current_volatility", 0.0)
     var_lower = pred_price * (1 - Z_95_ONE_TAILED * current_vol)
@@ -127,23 +132,26 @@ def render_portfolio_dashboard(port_res):
     st.markdown("---")
     st.subheader("🌐 Portfolio Risk View")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("Total VaR (95%)", f"{port_res['portfolio_var_95']:.6f}")
-    with col2:
-        st.metric("Portfolio Volatility", f"{port_res['portfolio_volatility']:.6f}")
+    if port_res.get('portfolio_var_95') is not None:
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Total VaR (95%)", f"{port_res['portfolio_var_95']:.6f}")
+        with col2:
+            st.metric("Portfolio Volatility", f"{port_res['portfolio_volatility']:.6f}")
 
-    st.markdown("### Correlation Matrix")
-    corr_df = pd.DataFrame(port_res['correlation_matrix'])
-    fig = px.imshow(corr_df, text_auto=True, color_continuous_scale='RdBu_r')
-    st.plotly_chart(fig, use_container_width=True)
+        st.markdown("### Correlation Matrix")
+        corr_df = pd.DataFrame(port_res['correlation_matrix'])
+        fig = px.imshow(corr_df, text_auto=True, color_continuous_scale='RdBu_r')
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("Not enough tickers with sufficient overlapping data to compute portfolio VaR.")
 
     st.markdown("### Individual Asset Risk")
     asset_rows = []
     for t, ticker_risk in port_res["individual_risks"].items():
         asset_rows.append({
             "Ticker": t,
-            "Predicted Price": f"₹ {ticker_risk['regression']['predicted_close_xgb']:.2f}",
+            "Predicted Price": f"₹ {ticker_risk['regression']['predicted_close']:.2f}",
             "Final Risk (Reg)": f"{ticker_risk['regression']['final_risk']:.1f}",
             "Final Risk (Class)": f"{ticker_risk['classification']['final_risk']:.1f}",
         })
